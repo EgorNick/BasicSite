@@ -42,7 +42,8 @@ namespace WebApplicationUpgrade.Controllers
             else {
                 TempData["ErrorMessage"] = "Произошла ошибка в сохранении записи в бд!";
             }
-        return RedirectToAction("Index");
+            
+            return RedirectToAction("Index", "Home");
         }
     }
 }

@@ -29,8 +29,9 @@ public class AccountController: Controller
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(RegisterViewModel model)
+    public async Task<IActionResult>Register(RegisterViewModel model)
     {
+        Console.WriteLine("Метод вызывается!");
         if (ModelState.IsValid)
         {
             var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
@@ -40,11 +41,27 @@ public class AccountController: Controller
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToAction("Index", "Home");
             }
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+                Console.WriteLine("Errors occurred during registration:");
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine(error.Description);
+                }
+            }
 
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError("", error.Description);
             }
+        }
+        else
+        {
+            Console.WriteLine("Error: ModelState");
         }
         return View(model);
     }
