@@ -23,7 +23,7 @@ namespace WebApplicationUpgrade.Controllers
         }
 
         [HttpPost]
-        public IActionResult SavingInfo(Contact model)
+        public IActionResult SaveInfo(Contact model)
         {
             if (!ModelState.IsValid)
             {
