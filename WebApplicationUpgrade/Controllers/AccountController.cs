@@ -25,13 +25,16 @@ public class AccountController: Controller
     [HttpGet]
     public IActionResult Login()
     {
+        if (User.Identity.IsAuthenticated)
+        {
+            return RedirectToAction("Index", "Home");
+        }
         return View();
     }
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult>Register(RegisterViewModel model)
     {
-        Console.WriteLine("Метод вызывается!");
         if (ModelState.IsValid)
         {
             var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
@@ -39,7 +42,7 @@ public class AccountController: Controller
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Login", "Account");
             }
             if (!result.Succeeded)
             {
@@ -76,7 +79,11 @@ public class AccountController: Controller
             {
                 return RedirectToAction("Index", "Home");
             }
-            ModelState.AddModelError("", "Invalid Attemp");
+            else
+            {
+                Console.WriteLine("Ошибка в логировании пользователя");
+                ModelState.AddModelError("", "Login Failed");
+            }
         }
         return View(model);
     }
@@ -86,6 +93,6 @@ public class AccountController: Controller
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Login", "Account");
     }
 }

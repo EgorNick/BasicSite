@@ -4,11 +4,11 @@ namespace WebApplicationUpgrade.Models.ViewModel;
 
 public class LoginViewModel
 {
-    [Required]
+    [Required(ErrorMessage = "Введите првильно свою почту")]
     [EmailAddress]
     public string Email { get; set; }
     
-    [Required]
+    [Required(ErrorMessage = "Введите правильно свой пароль")]
     [DataType(DataType.Password)]
     public string Password { get; set; }
     
