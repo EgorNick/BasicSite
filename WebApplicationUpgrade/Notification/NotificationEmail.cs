@@ -8,7 +8,7 @@ public class NotificationEmail : INotification
     {
             try
             {
-                var directoryPath = @"C:\Users\nisma\OneDrive\Документы\aspnet\WebApplicationUpgrade\WebApplicationUpgrade\";
+                var directoryPath = Directory.GetCurrentDirectory();
                 if (!Directory.Exists(directoryPath))
                 {
                     Directory.CreateDirectory(directoryPath);

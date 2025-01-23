@@ -36,12 +36,11 @@ namespace WebApplicationUpgrade.Controllers
             if (!ModelState.IsValid)
             {
                 TempData["ErrorMessage"] = "Пожалуйста, заполните все поля.";
-                return RedirectToAction("Index");
             }
 
             if (_savingInfo.SavingIntoDbase(model))
             {
-                if (_notification.Notificate(model))
+                if (_savingInfo.SavingIntoFile(model))
                 {
                     TempData["SuccessMessage"] = "Данные успешно сохранены и отправлены!";
                 }
