@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace WebApplicationUpgrade.Models
+namespace WebApplicationUpgrade.Data
 {
-    public class Contact
+    public class ContactEntity
     {
         public int Id {get; set;}
         

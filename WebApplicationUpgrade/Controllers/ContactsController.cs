@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApplicationUpgrade.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class ContactsController : Controller
     {
         private readonly INotification _notification;
@@ -19,30 +21,41 @@ namespace WebApplicationUpgrade.Controllers
         
         public IActionResult Index()
         {
-            return View(new Contact());
+            return View(new ContactModel());
+        }
+
+        [HttpGet("EmptyContact")]
+        public ActionResult<ContactModel> GetEmptyContact()
+        {
+            return Ok(new ContactModel());
         }
 
         [HttpPost]
-        public IActionResult SavingInfo(Contact model)
+        public IActionResult SaveInfo(ContactModel model)
         {
             if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Пожалуйста, заполните все поля";
+                TempData["ErrorMessage"] = "Пожалуйста, заполните все поля.";
+                return RedirectToAction("Index");
             }
+
             if (_savingInfo.SavingIntoDbase(model))
             {
                 if (_notification.Notificate(model))
                 {
                     TempData["SuccessMessage"] = "Данные успешно сохранены и отправлены!";
                 }
-                else {
-                    TempData["ErrorMessage"] = "Произошла ошибка отправке сообщения!";
+                else
+                {
+                    TempData["ErrorMessage"] = "Произошла ошибка при отправке сообщения.";
                 }
             }
-            else {
-                TempData["ErrorMessage"] = "Произошла ошибка в сохранении записи в бд!";
+            else
+            {
+                TempData["ErrorMessage"] = "Произошла ошибка при сохранении данных в базу.";
             }
-        return RedirectToAction("Index");
+
+            return RedirectToAction("Index");
         }
     }
 }

@@ -1,4 +1,4 @@
-@model WebApplicationUpgrade.Models.Contact
+@model WebApplicationUpgrade.Models.ContactModel
 
 @{
     ViewData["Title"] = "Обратная связь";
@@ -15,7 +15,7 @@
     <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 }
 
-<form asp-action="SavingInfo" asp-controller="Contacts" method="post">
+<form asp-action="SaveInfo" asp-controller="Contacts" method="post">
     <div>
         <label asp-for="Name"></label>
         <input asp-for="Name" class="form-control" />

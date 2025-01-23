@@ -3,5 +3,5 @@ using WebApplicationUpgrade.Models;
 
 public interface ISavingInfo
 {
-    public bool SavingIntoDbase(Contact model);
+    public bool SavingIntoDbase(ContactModel model);
 }

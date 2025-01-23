@@ -4,7 +4,7 @@ namespace WebApplicationUpgrade.Services;
 
 public class NotificationEmail : INotification
 {
-    public bool Notificate(Contact model)
+    public bool Notificate(ContactModel model)
     {
             try
             {
