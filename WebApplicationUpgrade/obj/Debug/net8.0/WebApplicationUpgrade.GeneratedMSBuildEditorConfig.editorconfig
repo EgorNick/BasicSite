@@ -26,6 +26,10 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade
 build_property._RazorSourceGeneratorDebug = 
 
+[C:/Users/nisma/OneDrive/Документы/GitHub/WebApplicationUpgrade/WebApplicationUpgrade/Pages/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVnaXN0ZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/nisma/OneDrive/Документы/GitHub/WebApplicationUpgrade/WebApplicationUpgrade/Views/Contacts/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGFjdHNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 

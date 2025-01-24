@@ -38,8 +38,10 @@ builder.Services.AddAuthentication(options =>
     });
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 builder.Services.AddSingleton<INotification, NotificationEmail>();
 builder.Services.AddScoped<ISavingInfo, SavingInfo>();
+builder.Services.AddScoped<IJwtAuthenticationManager, JwtAuthenticationManager>();
 
 var app = builder.Build();
 
@@ -53,7 +55,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

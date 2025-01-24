@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WebApplicationUpgrade")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dd1398dc1c0ba62fdace3313234fe1ac61fbe3fc")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+509633a529d5ac46ed84f284c13b9175c3fc8006")]
 [assembly: System.Reflection.AssemblyProductAttribute("WebApplicationUpgrade")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WebApplicationUpgrade")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
