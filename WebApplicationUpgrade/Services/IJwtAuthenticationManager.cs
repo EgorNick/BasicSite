@@ -2,6 +2,7 @@ namespace WebApplicationUpgrade.Services;
 
 public interface IJwtAuthenticationManager
 {
-    string Authenticate(string username, string password);
-    string RefreshToken(string oldToken);
+    Task<string> Authenticate(string userName, string password);
+
+    Task<string> RefreshToken(string oldToken);
 }

@@ -281,3 +281,9 @@ C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebAppli
 C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade\bin\Debug\net8.0\Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore.dll
+C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade\obj\Debug\net8.0\WebApplicationUpgrade.MvcApplicationPartsAssemblyInfo.cs

@@ -5,17 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApplicationUpgrade.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
     public class ContactsController : Controller
     {
-        private readonly INotification _notification;
 
         private readonly ISavingInfo _savingInfo;
 
-        public ContactsController(INotification notification, ISavingInfo savingInfo)
+        public ContactsController(ISavingInfo savingInfo)
         {
-            _notification = notification;
             _savingInfo = savingInfo;
         }
         
@@ -23,8 +19,7 @@ namespace WebApplicationUpgrade.Controllers
         {
             return View(new ContactModel());
         }
-
-        [HttpGet("EmptyContact")]
+        
         public ActionResult<ContactModel> GetEmptyContact()
         {
             return Ok(new ContactModel());

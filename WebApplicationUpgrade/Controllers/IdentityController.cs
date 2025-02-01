@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApplicationUpgrade.Data;
@@ -6,28 +7,27 @@ using WebApplicationUpgrade.Services;
 
 namespace WebApplicationUpgrade.Controllers
 {
-    [Microsoft.AspNetCore.Components.Route("api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class IdentityController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IJwtAuthenticationManager _jwtAuthenticationManager;
 
-        public IdentityController(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            IJwtAuthenticationManager jwtAuthenticationManager)
+        public IdentityController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtAuthenticationManager jwtAuthenticationManager)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
             _jwtAuthenticationManager = jwtAuthenticationManager;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
-            var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
+            var user = new ApplicationUser
+            {
+                UserName = model.Username, 
+                Email = model.Email
+            };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -39,7 +39,7 @@ namespace WebApplicationUpgrade.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var token = _jwtAuthenticationManager.Authenticate(model.Username, model.Password);
+            var token = await _jwtAuthenticationManager.Authenticate(model.Username, model.Password);
             if (token == null)
             {
                 return Unauthorized("Invalid credentials");
@@ -48,20 +48,49 @@ namespace WebApplicationUpgrade.Controllers
         }
 
         [HttpPost("refreshToken")]
-        public IActionResult RefreshToken([FromBody] RefreshTokenModel model)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenModel model)
         {
-            var token = _jwtAuthenticationManager.RefreshToken(model.OldToken);
-            if (string.IsNullOrEmpty(token))
+            var newAccessToken = await _jwtAuthenticationManager.RefreshToken(model.OldToken);
+            if (newAccessToken == null)
             {
                 return Unauthorized("Invalid refresh token");
             }
-            return Ok(new {Token = token});
+            return Ok(new {newAccessToken = newAccessToken});
         }
 
         [HttpPost("logout")]
         public IActionResult Logout()
         {
             return Ok(new {Message = "Logged out successfully"});
+        }
+        
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfileInfo()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("Invalid token");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            return Ok(new
+            {
+                Username = user.UserName,
+                Email = user.Email
+            });
+        }
+        
+        [HttpGet]
+        public IActionResult Test()
+        {
+            return Ok(new { Message = "Identity Controller is working!" });
         }
     }
 }

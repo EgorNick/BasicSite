@@ -8,7 +8,7 @@ public class SavingInfo : ISavingInfo
 
     public SavingInfo(AppDbContext context, ILogger<SavingInfo> logger){
         _context = context;
-        _logger = _logger;
+        _logger = logger;
     }
     public bool SavingIntoDbase(ContactModel model)
     {
@@ -21,6 +21,7 @@ public class SavingInfo : ISavingInfo
                 Age = model.Age,
                 Email = model.Email,
                 RecipientEmail = model.RecipientEmail,
+                Subject = model.Subject,
                 Body = model.Body,
             };
             _context.Contacts.Add(entity);
