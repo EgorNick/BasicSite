@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApplicationUpgrade.Data;
@@ -13,11 +14,13 @@ namespace WebApplicationUpgrade.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IJwtAuthenticationManager _jwtAuthenticationManager;
+        private readonly ILogger _logger;
 
-        public IdentityController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtAuthenticationManager jwtAuthenticationManager)
+        public IdentityController(UserManager<ApplicationUser> userManager, IJwtAuthenticationManager jwtAuthenticationManager, ILogger<IdentityController> logger)
         {
             _userManager = userManager;
             _jwtAuthenticationManager = jwtAuthenticationManager;
+            _logger = logger;
         }
 
         [HttpPost("register")]
@@ -64,10 +67,19 @@ namespace WebApplicationUpgrade.Controllers
             return Ok(new {Message = "Logged out successfully"});
         }
         
+        [Authorize]
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfileInfo()
         {
+            foreach (var claim in User.Claims)
+            {
+                _logger.LogInformation($"Claim type: {claim.Type} claim value: {claim.Value}");
+            }
+            var authHeader = Request.Headers["Authorization"].ToString();
+            _logger.LogInformation($"Authorization header: {authHeader}");
+            
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            _logger.LogInformation($"UserId: {userId}");
     
             if (string.IsNullOrEmpty(userId))
             {

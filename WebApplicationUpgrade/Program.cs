@@ -27,6 +27,8 @@ builder.Services.AddAuthentication(options =>
     })
     .AddJwtBearer(options =>
     {
+        options.SaveToken = true;
+        options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -37,12 +39,15 @@ builder.Services.AddAuthentication(options =>
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
+        
     });
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
 builder.Services.AddScoped<ISavingInfo, SavingInfo>();
 builder.Services.AddScoped<IJwtAuthenticationManager, JwtAuthenticationManager>();
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 if (!builder.Environment.IsProduction())
     builder.Services.AddSwaggerGen(c =>
@@ -108,12 +113,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
 });
-app.UseAuthentication();
-app.UseAuthorization();
 
 
 app.MapControllerRoute(

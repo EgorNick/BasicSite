@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using WebApplicationUpgrade.Data;
+using WebApplicationUpgrade.Models;
 
 namespace WebApplicationUpgrade.Services
 {
@@ -27,12 +28,10 @@ namespace WebApplicationUpgrade.Services
                 return null;
             }
 
-            // Создание JWT
             var accessToken = GenerateJwtToken(user);
 
-            // Генерация refresh-токена
             var refreshToken = GenerateRefreshToken();
-            
+
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await _userManager.UpdateAsync(user);
@@ -110,7 +109,7 @@ namespace WebApplicationUpgrade.Services
                 ValidateAudience = true,
                 ValidIssuer = _configuration["Jwt:Issuer"],
                 ValidAudience = _configuration["Jwt:Audience"],
-                ValidateLifetime = false // Разрешаем истёкшие токены
+                ValidateLifetime = false
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
