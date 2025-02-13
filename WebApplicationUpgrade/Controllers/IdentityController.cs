@@ -29,8 +29,9 @@ namespace WebApplicationUpgrade.Controllers
             var user = new ApplicationUser
             {
                 UserName = model.Username, 
-                Email = model.Email
+                Email = model.Email,
             };
+            
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -64,39 +65,8 @@ namespace WebApplicationUpgrade.Controllers
         [HttpPost("logout")]
         public IActionResult Logout()
         {
+            Response.Cookies.Delete("accessToken");
             return Ok(new {Message = "Logged out successfully"});
-        }
-        
-        [Authorize]
-        [HttpGet("profile")]
-        public async Task<IActionResult> GetProfileInfo()
-        {
-            foreach (var claim in User.Claims)
-            {
-                _logger.LogInformation($"Claim type: {claim.Type} claim value: {claim.Value}");
-            }
-            var authHeader = Request.Headers["Authorization"].ToString();
-            _logger.LogInformation($"Authorization header: {authHeader}");
-            
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            _logger.LogInformation($"UserId: {userId}");
-    
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized("Invalid token");
-            }
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return NotFound("User not found");
-            }
-
-            return Ok(new
-            {
-                Username = user.UserName,
-                Email = user.Email
-            });
         }
         
         [HttpGet]

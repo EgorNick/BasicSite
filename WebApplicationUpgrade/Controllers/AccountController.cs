@@ -22,6 +22,11 @@ public class AccountController : Controller
             _signInManager = signInManager;
         }
         
+        public IActionResult Index()
+        {
+            return View();
+        }
+        
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser(RegisterModel model)
         {
@@ -87,31 +92,6 @@ public class AccountController : Controller
         {
             await _signInManager.SignOutAsync();
             return Ok(new {Message = "Logout"});
-        }
-        
-        [Authorize]
-        [HttpGet("profile")]
-        public async Task<IActionResult> GetProfileInfo()
-        {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    
-            if (string.IsNullOrEmpty(userId))
-            {
-                Console.WriteLine("ndnbdsndfmsbs");
-                return Unauthorized();
-            }
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return NotFound("User not found");
-            }
-
-            return Ok(new
-            {
-                Username = user.UserName,
-                Email = user.Email
-            });
         }
         
         [HttpGet]

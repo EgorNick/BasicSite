@@ -48,6 +48,7 @@ builder.Services.AddScoped<ISavingInfo, SavingInfo>();
 builder.Services.AddScoped<IJwtAuthenticationManager, JwtAuthenticationManager>();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
+builder.Services.AddAuthentication();
 
 if (!builder.Environment.IsProduction())
     builder.Services.AddSwaggerGen(c =>
