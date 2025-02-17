@@ -1,10 +1,9 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebApplicationUpgrade.Data;
 using WebApplicationUpgrade.Models;
 using WebApplicationUpgrade.Services;
+using System.Threading.Tasks;
 
 namespace WebApplicationUpgrade.Controllers
 {
@@ -14,13 +13,13 @@ namespace WebApplicationUpgrade.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IJwtAuthenticationManager _jwtAuthenticationManager;
-        private readonly ILogger _logger;
+        private readonly AppDbContext _context;
 
-        public IdentityController(UserManager<ApplicationUser> userManager, IJwtAuthenticationManager jwtAuthenticationManager, ILogger<IdentityController> logger)
+        public IdentityController(UserManager<ApplicationUser> userManager, IJwtAuthenticationManager jwtAuthenticationManager, AppDbContext context)
         {
             _userManager = userManager;
             _jwtAuthenticationManager = jwtAuthenticationManager;
-            _logger = logger;
+            _context = context;
         }
 
         [HttpPost("register")]
@@ -28,52 +27,68 @@ namespace WebApplicationUpgrade.Controllers
         {
             var user = new ApplicationUser
             {
-                UserName = model.Username, 
-                Email = model.Email,
+                UserName = model.Username,
+                Email = model.Email
             };
-            
+
+            if (model.ConfirmPassword != model.Password)
+            {
+                return BadRequest("Passwords do not match");
+            }
+
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
-                return Ok(new {Message = "User registered successfully"});
+                var profile = new ProfileEntity()
+                {
+                    UserId = user.Id,
+                    AvatarUrl = "default.png",
+                    Timezone = "UTC",
+                    Location = "default",
+                };
+                _context.Profiles.Add(profile);
+                await _context.SaveChangesAsync();
+                
+                return Ok(new { Message = "User registered successfully" });
             }
+
             return BadRequest(result.Errors);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var token = await _jwtAuthenticationManager.Authenticate(model.Username, model.Password);
-            if (token == null)
+            var tokens = await _jwtAuthenticationManager.Authenticate(model.Username, model.Password);
+            if (tokens == null)
             {
                 return Unauthorized("Invalid credentials");
             }
-            return Ok(new {Token = token});
+
+            return Ok(tokens); // Теперь возвращает оба токена
         }
 
         [HttpPost("refreshToken")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenModel model)
         {
-            var newAccessToken = await _jwtAuthenticationManager.RefreshToken(model.OldToken);
-            if (newAccessToken == null)
+            var tokens = await _jwtAuthenticationManager.RefreshToken(model.RefreshToken);
+            if (tokens == null)
             {
                 return Unauthorized("Invalid refresh token");
             }
-            return Ok(new {newAccessToken = newAccessToken});
+
+            return Ok(tokens);
         }
 
         [HttpPost("logout")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout([FromBody] RefreshTokenModel model)
         {
-            Response.Cookies.Delete("accessToken");
-            return Ok(new {Message = "Logged out successfully"});
-        }
-        
-        [HttpGet]
-        public IActionResult Test()
-        {
-            return Ok(new { Message = "Identity Controller is working!" });
+            bool revoked = await _jwtAuthenticationManager.RevokeRefreshToken(model.RefreshToken);
+            if (!revoked)
+            {
+                return BadRequest("Invalid refresh token");
+            }
+
+            return Ok(new { Message = "Logged out successfully" });
         }
     }
 }
-

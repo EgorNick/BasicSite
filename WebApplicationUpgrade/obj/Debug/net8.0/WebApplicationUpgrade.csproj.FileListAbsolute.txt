@@ -287,3 +287,5 @@ C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebAppli
 C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade\obj\Debug\net8.0\WebApplicationUpgrade.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade\bin\Debug\net8.0\CloudinaryDotNet.dll
+C:\Users\nisma\OneDrive\Документы\GitHub\WebApplicationUpgrade\WebApplicationUpgrade\bin\Debug\net8.0\Newtonsoft.Json.dll

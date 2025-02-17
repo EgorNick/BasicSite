@@ -1,11 +1,11 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 using WebApplicationUpgrade.Data;
-using WebApplicationUpgrade.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApplicationUpgrade.Services
 {
@@ -19,52 +19,42 @@ namespace WebApplicationUpgrade.Services
             _userManager = userManager;
             _configuration = configuration;
         }
-
-        public async Task<string> Authenticate(string username, string password)
+        
+        public async Task<object> Authenticate(string username, string password)
         {
             var user = await _userManager.FindByNameAsync(username);
             if (user == null || !await _userManager.CheckPasswordAsync(user, password))
             {
-                return null;
+                return null; // Неверные данные
             }
 
             var accessToken = GenerateJwtToken(user);
-
             var refreshToken = GenerateRefreshToken();
 
+            // Сохранение refreshToken на сервере
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            await _userManager.UpdateAsync(user);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); // Обновляем срок действия refreshToken
 
-            return accessToken;
-        }
-
-
-        public async Task<string> RefreshToken(string oldToken)
-        {
-            var principal = GetPrincipalFromExpiredToken(oldToken);
-            if (principal == null)
+            try
             {
-                return null;
-            }
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                {
+                    return new { Error = "Failed to update user data." };
+                }
 
-            var username = principal.Identity?.Name;
-            var user = await _userManager.FindByNameAsync(username);
-            if (user == null || string.IsNullOrEmpty(user.RefreshToken) || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+                // Если изменения успешно сохранены
+                return new
+                {
+                    accessToken,
+                    refreshToken
+                };
+            }
+            catch (Exception ex)
             {
-                return null;
+                // Логирование ошибки
+                return new { Error = ex.Message };
             }
-            
-            var newAccessToken = GenerateJwtToken(user);
-            var newRefreshToken = GenerateRefreshToken();
-            
-            user.RefreshToken = newRefreshToken;
-            
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            
-            _userManager.UpdateAsync(user).Wait();
-
-            return newAccessToken;
         }
 
         private string GenerateJwtToken(ApplicationUser user)
@@ -73,7 +63,8 @@ namespace WebApplicationUpgrade.Services
             {
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // Уникальный идентификатор токена
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -99,21 +90,54 @@ namespace WebApplicationUpgrade.Services
             return Convert.ToBase64String(randomBytes);
         }
 
-        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        public async Task<bool> RevokeRefreshToken(string refreshToken)
         {
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidIssuer = _configuration["Jwt:Issuer"],
-                ValidAudience = _configuration["Jwt:Audience"],
-                ValidateLifetime = false
-            };
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+            if (user == null) return false;
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            return tokenHandler.ValidateToken(token, tokenValidationParameters, out _);
+            user.RefreshToken = null;
+            user.RefreshTokenExpiryTime = null;
+            await _userManager.UpdateAsync(user);
+            return true;
+        }
+
+        public async Task<object> RefreshToken(string refreshToken)
+        {
+            var user = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken && u.RefreshTokenExpiryTime > DateTime.UtcNow);
+
+            if (user == null)
+            {
+                return new { Error = "Invalid or expired refresh token" }; // refreshToken недействителен
+
+            }
+
+            var newAccessToken = GenerateJwtToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+
+            // Обновление данных пользователя
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); // Новый срок действия
+
+            try
+            {
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                {
+                    return new { Error = "Failed to update user data." };
+                }
+
+                return new
+                {
+                    accessToken = newAccessToken,
+                    refreshToken = newRefreshToken
+                };
+            }
+            catch (Exception ex)
+            {
+                // Логирование ошибки
+                return new { Error = ex.Message };
+            }
         }
     }
 }

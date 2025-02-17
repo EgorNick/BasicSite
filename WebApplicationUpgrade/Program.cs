@@ -31,8 +31,8 @@ builder.Services.AddAuthentication(options =>
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
+            ValidateIssuer = true, // 
+            ValidateAudience = true, //
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
@@ -44,11 +44,11 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
+builder.Services.AddSingleton<CloudinaryService>();
 builder.Services.AddScoped<ISavingInfo, SavingInfo>();
 builder.Services.AddScoped<IJwtAuthenticationManager, JwtAuthenticationManager>();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
-builder.Services.AddAuthentication();
 
 if (!builder.Environment.IsProduction())
     builder.Services.AddSwaggerGen(c =>
