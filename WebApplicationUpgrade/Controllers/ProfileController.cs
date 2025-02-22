@@ -77,12 +77,12 @@ public class ProfileController : ControllerBase
         profile.Location = updateProfile.Location;
         profile.Birthday = updateProfile.Birthday;
         profile.Timezone = updateProfile.Timezone;
-
         if (updateProfile.AvatarFile != null)
         {
             var avatarUrl = await _cloudinaryService.UploadImageAsync(updateProfile.AvatarFile);
             profile.AvatarUrl = avatarUrl;
         }
+        
         await _context.SaveChangesAsync();
         
         return Ok(new {Message = "Profile updated"});

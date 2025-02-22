@@ -38,6 +38,7 @@ namespace WebApplicationUpgrade.Services
                 }
                 else
                 {
+                    var errorMessage = uploadResult.Error != null ? uploadResult.Error.Message : "Unknown Error";
                     throw new Exception("Error uploading image to Cloudinary");
                 }
             }
