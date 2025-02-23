@@ -1,0 +1,22 @@
+# This is a generated file. Not intended for manual editing.
+version: "3.8"
+services:
+  web:
+    build:
+      context: "C:\\Users\\nisma\\OneDrive\\Документы\\GitHub\\WebApplicationUpgrade\\\
+        WebApplicationUpgrade"
+      dockerfile: "Dockerfile"
+      target: "build"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/WebApplicationUpgrade.dll"
+    environment:
+      ASPNETCORE_STATICWEBASSETS: "/app/bin/Debug/net8.0/WebApplicationUpgrade.staticwebassets.runtime.CT.json"
+    image: "webapplicationupgrade:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\nisma\\.nuget\\packages:/root/.nuget/packages"
+    - "C:\\Users\\nisma\\OneDrive\\Документы\\GitHub\\WebApplicationUpgrade\\WebApplicationUpgrade:/app:rw"
+    - "C:\\Users\\nisma\\OneDrive\\Документы\\GitHub\\WebApplicationUpgrade:/src:rw"
+    working_dir: "/app"

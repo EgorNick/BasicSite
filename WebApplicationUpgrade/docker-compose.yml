@@ -1,0 +1,26 @@
+﻿version: '3.8'
+
+services:
+  web:
+    build: .  # Указывает на текущую директорию
+    ports:
+      - "5117:80"  # Проброс порта 80 внутри контейнера на порт 5117 на хосте
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=MyDb;Username=postgres;Password=Bnvj1975
+    depends_on:
+      - postgres  # Указывает, что сервис web зависит от сервиса postgres
+  
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Bnvj1975
+      POSTGRES_DB: MyDb
+    ports:
+      - "5432:5432"  # Проброс порта для подключения к базе данных PostgreSQL
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Сохраняем данные базы в volume
+
+volumes:
+  postgres_data:  # Это volume для данных PostgreSQL
